@@ -55,6 +55,9 @@ var parserWin32Arm64Msvc []byte
 //go:embed parser.win32-x64-msvc.node
 var parserWin32X64Msvc []byte
 
+//go:embed parser.freebsd-x64.node
+var parserFreeBSDX64 []byte
+
 type astAnalyzerModule struct {
 	sdk                   *jxscouttypes.ModuleSDK
 	repo                  *astAnalyzerRepository
@@ -138,6 +141,11 @@ func (m *astAnalyzerModule) Initialize(sdk *jxscouttypes.ModuleSDK) error {
 	parserWin32X64MsvcPath := filepath.Join(saveDir, "parser.win32-x64-msvc.node")
 	if err := os.WriteFile(parserWin32X64MsvcPath, parserWin32X64Msvc, 0755); err != nil {
 		return errutil.Wrap(err, "failed to write parser win32 x64 msvc file")
+	}
+
+	parserFreeBSDX64Path := filepath.Join(saveDir, "parser.freebsd-x64.node")
+	if err := os.WriteFile(parserFreeBSDX64Path, parserFreeBSDX64, 0755); err != nil {
+		return errutil.Wrap(err, "failed to write parser freebsd x64 file")
 	}
 
 	m.astAnalyzerBinaryPath = binaryPath
@@ -342,6 +350,12 @@ func (m *astAnalyzerModule) getNativeLibraryPath() (result string, err error) {
 			result = filepath.Join(basePath, "parser.win32-arm64-msvc.node")
 		case "amd64":
 			result = filepath.Join(basePath, "parser.win32-x64-msvc.node")
+		}
+		
+	case "freebsd":
+		switch runtime.GOARCH {
+		case "amd64":
+			result = filepath.Join(basePath, "parser.freebsd-x64.node")
 		}
 	}
 
